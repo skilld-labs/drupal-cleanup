@@ -1,0 +1,21 @@
+{
+  "name": "skilldlabs/drupal-cleanup",
+  "description": "Removes files on Drupal packages.",
+  "keywords": [
+    "drupal"
+  ],
+  "license": "MIT",
+  "type": "composer-plugin",
+  "autoload": {
+    "psr-4": {
+      "SkilldDrupal\\": "."
+    }
+  },
+  "extra": {
+    "class": "SkilldDrupal\\DrupalCleanup"
+  },
+  "require": {
+    "php": ">=7.3.0",
+    "composer-plugin-api": "^1.1 || ^2"
+  }
+}
