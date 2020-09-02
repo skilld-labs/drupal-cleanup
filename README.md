@@ -14,5 +14,8 @@ You can configure the plugin using the root package's composer.json extra field,
       "drupal-module": [
         "tests",
         "src/Tests"
+      ],
+      "exclude": [
+        "web/modules/contrib/devel/.spoons"
       ]
     }

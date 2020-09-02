@@ -99,19 +99,22 @@ class DrupalCleanup implements PluginInterface, EventSubscriberInterface {
       $package_path = $this->composer->getInstallationManager()
         ->getInstallPath($package);
       $fs = new Filesystem();
+      $exclude = $extra['drupal-cleanup']['exclude'];
       foreach ($rules as $rule) {
         $paths = glob($package_path . DIRECTORY_SEPARATOR . $rule, GLOB_ERR);
         if (is_array($paths)) {
           foreach ($paths as $path) {
-            try {
-              $fs->remove($path);
-            }
-            catch (\Throwable $e) {
-              $this->io->writeError(\sprintf(
-                '<info>%s:</info> Error occurred: %s',
-                $package->getName(),
-                $e->getMessage()
-              ));
+            if (!in_array($path, $exclude)) {
+              try {
+                $fs->remove($path);
+              }
+              catch (\Throwable $e) {
+                $this->io->writeError(\sprintf(
+                  '<info>%s:</info> Error occurred: %s',
+                  $package->getName(),
+                  $e->getMessage()
+                ));
+              }
             }
           }
         }
