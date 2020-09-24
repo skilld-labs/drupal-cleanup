@@ -99,7 +99,7 @@ class DrupalCleanup implements PluginInterface, EventSubscriberInterface {
       $package_path = $this->composer->getInstallationManager()
         ->getInstallPath($package);
       $fs = new Filesystem();
-      $exclude = $extra['drupal-cleanup']['exclude'];
+      $exclude = $extra['drupal-cleanup']['exclude'] ?? [];
       foreach ($rules as $rule) {
         $paths = glob($package_path . DIRECTORY_SEPARATOR . $rule, GLOB_ERR);
         if (is_array($paths)) {
