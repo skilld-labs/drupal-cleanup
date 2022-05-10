@@ -88,14 +88,10 @@ class DrupalCleanup implements PluginInterface, EventSubscriberInterface {
    */
   public function cleanPackage(PackageInterface $package) {
     $extra = $this->composer->getPackage()->getExtra();
-    if (isset($extra['drupal-cleanup']) &&
-      isset($extra['drupal-cleanup'][$package->getType()])) {
-      $rules = $extra['drupal-cleanup'][$package->getType()];
-      $this->io->writeError(sprintf(
-        '%sCleaning: <info>%s</info>',
-        str_repeat(' ', 4),
-        $package->getName()
-      ));
+    $type = $package->getType();
+    if (isset($extra['drupal-cleanup'][$type])) {
+      $removed = 0;
+      $rules = $extra['drupal-cleanup'][$type];
       $package_path = $this->composer->getInstallationManager()
         ->getInstallPath($package);
       $fs = new Filesystem();
@@ -107,11 +103,12 @@ class DrupalCleanup implements PluginInterface, EventSubscriberInterface {
             if (!in_array($path, $exclude)) {
               try {
                 $fs->remove($path);
+                $removed++;
               }
               catch (\Throwable $e) {
                 $this->io->writeError(\sprintf(
-                  '<info>%s:</info> Error occurred: %s',
-                  $package->getName(),
+                  '<info>%s:</info> (<comment>%s</comment>) Error occurred: %s',
+                  $package->getName(), $type,
                   $e->getMessage()
                 ));
               }
@@ -119,7 +116,16 @@ class DrupalCleanup implements PluginInterface, EventSubscriberInterface {
           }
         }
       }
+      $message = "removed <comment>$removed</comment>";
     }
+    else {
+      $message = "skipped as settings for package type <comment>$type</comment> missing";
+    }
+    $this->io->write(sprintf(
+      '  - Cleaning <info>%s</info> (<comment>%s</comment>): %s',
+      $package->getName(),
+      $type, $message
+    ), TRUE, IOInterface::VERBOSE);
   }
 
 }
