@@ -10,6 +10,7 @@ use Composer\IO\IOInterface;
 use Composer\Package\PackageInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Util\Filesystem;
+use Composer\Util\Platform;
 
 /**
  * A Composer plugin to remove files in Drupal packages.
@@ -66,6 +67,10 @@ class DrupalCleanup implements PluginInterface, EventSubscriberInterface {
    * @param \Composer\Installer\PackageEvent $event
    */
   public function onPostPackageInstall(PackageEvent $event) {
+    if (Platform::getEnv('DRUPAL_CLEANUP_SKIP') ?? 0) {
+      $this->io->write('Clean-up is skipped', TRUE, IOInterface::VERBOSE);
+      return [];
+    }
     $this->cleanPackage($event->getOperation()->getPackage());
   }
 
@@ -75,6 +80,10 @@ class DrupalCleanup implements PluginInterface, EventSubscriberInterface {
    * @param \Composer\Installer\PackageEvent $event
    */
   public function onPostPackageUpdate(PackageEvent $event) {
+    if (Platform::getEnv('DRUPAL_CLEANUP_SKIP') ?? 0) {
+      $this->io->write('Clean-up is skipped', TRUE, IOInterface::VERBOSE);
+      return [];
+    }
     $this->cleanPackage($event->getOperation()->getTargetPackage());
   }
 
